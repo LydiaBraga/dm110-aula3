@@ -6,31 +6,32 @@ import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
+import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
-import javax.jms.TextMessage;
+
+import br.inatel.dm110.hello.api.ProductTO;
 
 @Stateless
-public class HelloMessageSender {
-	
+public class ProductMessageSender {
+
 	@Resource(lookup = "java:/ConnectionFactory")
 	private ConnectionFactory connectionFactory;
 	
-	@Resource(lookup = "java:/jms/queue/dm110queue")
+	@Resource(lookup = "java:/jms/queue/productQueue")
 	private Queue queue;
 	
-	public void sendTextMessage(String text) {
+	public void sendMessage(ProductTO productTO) {
 		try (
 			Connection connection = connectionFactory.createConnection();
 			Session session = connection.createSession();
 			MessageProducer producer = session.createProducer(queue);
 		) {
-			TextMessage textMessage = session.createTextMessage(text);		
-			producer.send(textMessage);
-			System.out.println("####### Mensagem enviada...");
+			ObjectMessage productMessage = session.createObjectMessage(productTO);		
+			producer.send(productMessage);
 		} catch (JMSException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 }

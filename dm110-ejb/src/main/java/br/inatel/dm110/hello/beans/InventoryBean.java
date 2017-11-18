@@ -8,8 +8,8 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
+import br.inatel.dm110.hello.api.ProductTO;
 import br.inatel.dm110.hello.dao.ProductDAO;
-import br.inatel.dm110.hello.entities.Product;
 import br.inatel.dm110.hello.interfaces.InventoryLocal;
 import br.inatel.dm110.hello.interfaces.InventoryRemote;
 
@@ -20,18 +20,18 @@ public class InventoryBean implements InventoryRemote, InventoryLocal {
 
 	@EJB
 	private ProductDAO productDAO;
+	
+	@EJB
+	private ProductMessageSender productMessageSender;
 
 	@Override
-	public List<String> listProductNames() {
-		return productDAO.listAll().stream().map(Product::getName).collect(Collectors.toList());
+	public List<ProductTO> listProducts() {
+		return productDAO.listAll().stream().map(p -> new ProductTO(p.getId(), p.getName(), p.getQuantity())).collect(Collectors.toList());
 	}
 
 	@Override
-	public void createNewProduct(String name) {
-		Product product = new Product();
-		product.setName(name);
-		product.setQuantity(0);
-		productDAO.insert(product);
+	public void createNewProduct(ProductTO productTO) {
+		productMessageSender.sendMessage(productTO);
 	}
 
 }

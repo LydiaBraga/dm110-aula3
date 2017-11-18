@@ -29,7 +29,6 @@ public class HelloMDB implements MessageListener {
 				System.out.println("####### Iniciando processamento...");
 				Thread.sleep(15000);
 				System.out.println("####### Processando mensagem: " + text);
-				inventory.createNewProduct(text);
 				Thread.sleep(5000);
 				System.out.println("####### Finalizando processamento...");
 			}
